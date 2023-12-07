@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package chat;
+
+option go_package = "./chat";
+
+import "google/protobuf/timestamp.proto";
+
+service ChatService {
+  rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+  rpc Connect(stream ConnectRequest) returns (stream ConnectResponse);
+}
+
+message CreateRoomRequest {
+  string user_id = 1;
+  string name = 2;
+}
+
+message CreateRoomResponse {
+  string room_id = 1;
+}
+
+message ConnectRequest {
+  oneof payload {
+    ConnectRoom connect_room = 1;
+    SendMessage send_message = 2;
+
+  }
+
+  message ConnectRoom {
+    string user_id = 1;
+    string room_id = 2;
+    int64 last_read_message_number = 3;
+  }
+
+  message SendMessage {
+    string text = 1;
+  }
+}
+
+message ConnectResponse {
+  oneof payload {
+    Message message = 1;
+    MessageList message_list = 2;
+  }
+}
+
+message Message {
+  int64 number = 1;
+  string user_id = 2;
+  string room_id = 3;
+  string text = 4;
+  google.protobuf.Timestamp created_ad = 5;
+}
+
+message MessageList {
+  repeated Message messages =1;
+}
